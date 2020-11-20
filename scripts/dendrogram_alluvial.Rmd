@@ -1,0 +1,151 @@
+---
+title: "Dendrogram with alluvial"
+author: "Rebecca Hoyd"
+date: "January 2, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(readxl)
+library(tidyverse)
+library(rotl)
+library(ggtree)
+library(phylogram)
+library(phytools)
+library(ggalluvial)
+library(Hmisc)
+```
+
+# Load data
+
+```{r}
+bugs <- read_excel("../tables/Table-S2_alluvial-diagram.xlsx")
+  
+```
+
+# Make dendrogram
+
+## Manipulate data to convenient genera
+```{r}
+
+bugs.gen <- bugs %>%
+  rename("enrichage" = "Enriched Age",
+         "Immunotherapy" = "Enriched Immunotherapy")
+
+
+
+Taxon <- sort(unique(bugs.gen$Taxon))
+Taxon
+
+species.string <- c("akkermansia muciniphila", "alistipes finegoldii", "anaerotruncus colihominis",
+                    "bacteroides fragilis", "bifidobacterium longum","blautia obeum", "clostridium difficile",
+                    "collinsella aerofaciens", "coprobacillus cateniformis", "coprococcus eutactus",
+                    "dialister pneumosintes", "enterococcus faecalis", "escherichia coli", "eubacterium lentum",
+                    "faecalibacterium prausnitzii", "gardnerella vaginalis", "gemmiger formicilis", 
+                    "klebsiella pneumoniae",  "lactobacillus acidophilus",
+                    "lactonifactor longoviformis", "olsenella profusa", "oscillibacter ruminantium", 
+                    "parabacteroides distasonis",
+                    # "prevotella histicola", 
+                    "roseburia intestinalis", "ruminococcus bromii")
+
+add.spec <- as.data.frame(cbind(Taxon, species.string))
+
+bugs.gen.concise <- bugs.gen %>%
+  left_join(add.spec) %>%
+  filter(!Immunotherapy == enrichage)
+```
+
+
+# Use rotl to get tree for our convenient species
+
+```{r}
+# bugs_otl <- tnrs_match_names(names = as.character(bugs.gen.concise$species.string)) %>%
+#   filter(flags != "incertae_sedis")
+# 
+# write.csv(bugs_otl, "../data/tnrs-matched-names_2020-11-20.csv", row.names = F)
+bugs_otl <- read.csv("../data/tnrs-matched-names_2020-11-20.csv", stringsAsFactors = F)
+
+```
+
+```{r}
+# quicktree <- tol_induced_subtree(bugs_otl$ott_id)
+# write.tree(quicktree, "../data/tol-induced-tree_2020-11-20.txt")
+quicktree <- read.tree("../data/tol-induced-tree_2020-11-20.txt")
+
+ladderize(quicktree)
+ggtree(quicktree, ladderize = F) +
+  geom_tiplab() +
+  ggsave("../figures/tree.pdf", width = 2.5, height = 5)
+```
+
+
+# Make alluvial
+
+```{r}
+adddat <- bugs_otl %>%
+  mutate(tip.label = paste(unique_name, ott_id, sep = "_ott"),
+         species.string = search_string) 
+
+adddat <- bugs.gen.concise %>%
+  left_join(adddat)
+```
+
+```{r}
+is_tip <- quicktree$edge[,2] <= length(quicktree$tip.label)
+
+ordered_tips <- quicktree$edge[is_tip, 2]
+
+tipord <- quicktree$tip.label[ordered_tips]
+
+alluv.ord <- unique(adddat[, c("Taxon", "tip.label")]) %>%
+  mutate(tip.label = gsub(" ", "_", tip.label))
+
+alluv.ord <- as.data.frame(cbind(tip.label = tipord, hold = NA)) %>%
+  left_join(alluv.ord) %>%
+  mutate(Taxon = as.character(Taxon))
+alluv.ord$Taxon[20] <- "Faecalibacterium"
+alluv.ord$Taxon[12] <- "Enterococcus"
+alluv.ord$Taxon[13] <- "Lactobacillus"
+alluv.ord$Taxon[2] <- "Escherichia"
+```
+
+```{r}
+respkey <- c("firebrick", "sienna", "orangered",
+             "navy", "steelblue", "royalblue", 
+             "grey20", "grey60" )
+names(respkey) <- c("NRO", "NRU/M", "NRY", 
+                    "RO", "RU/M", "RY",
+                    "U/MO", "U/MY")
+
+# Fix akkermansia for quick modification
+
+# adddat$enrichage[1] <- "Y"
+```
+
+```{r}
+# cairo_ps("../figures/alluvial_3-axes.ps")
+adddat %>%
+  mutate(
+    colkey = paste0(Immunotherapy, enrichage),
+    enrichage = gsub("U/M", " U/M", enrichage),
+    enrichage = fct_relevel(enrichage, c("Y", "O", " U/M"))
+  ) %>%
+  filter(!is.na(search_string)) %>%
+  # group_by(Taxon) %>%
+  # add_count() %>%
+  # ungroup() %>%
+  # mutate(alluweight = 1/n) %>%
+  ggplot(aes(axis1 = fct_relevel(Taxon, rev(capitalize(alluv.ord$Taxon))),
+             axis2 = Immunotherapy, axis3 = enrichage, y = 1)) +
+  stat_alluvium(aes(fill = colkey), show.legend = FALSE) +
+  geom_stratum() +
+  geom_text(stat = "stratum", label.strata = TRUE, size = 3) +
+  scale_color_manual(aesthetics = c("color", "fill"), values = respkey) +
+  theme_void() +
+  ggsave("../figures/alluvial_3-axes.pdf", width = 5, height = 5)
+# dev.off()
+```
+
+
