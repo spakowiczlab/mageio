@@ -1,0 +1,24 @@
+"search_string","unique_name","approximate_match","ott_id","is_synonym","flags","number_matches"
+"anaerotruncus colihominis","Anaerotruncus colihominis",FALSE,433385,FALSE,"",1
+"akkermansia muciniphila","Akkermansia muciniphila",FALSE,39156,FALSE,"",1
+"alistipes finegoldii","Alistipes finegoldii",FALSE,682014,FALSE,"",1
+"bifidobacterium longum","Bifidobacterium longum",FALSE,279004,FALSE,"sibling_higher",1
+"blautia obeum","Blautia obeum",FALSE,695480,FALSE,"",1
+"coprobacillus cateniformis","Coprobacillus cateniformis",FALSE,167751,FALSE,"",1
+"coprococcus eutactus","Coprococcus eutactus",FALSE,630355,FALSE,"sibling_higher",1
+"clostridium difficile","Clostridioides difficile",FALSE,5256524,TRUE,"",1
+"collinsella aerofaciens","Collinsella aerofaciens",FALSE,884426,FALSE,"sibling_higher",1
+"dialister pneumosintes","Dialister pneumosintes",FALSE,187914,FALSE,"",1
+"enterococcus faecalis","Enterococcus faecalis",FALSE,594447,FALSE,"",1
+"escherichia coli","Escherichia coli",FALSE,474506,FALSE,"sibling_higher",1
+"eubacterium lentum","Eggerthella lenta",FALSE,696825,TRUE,"",1
+"faecalibacterium prausnitzii","Faecalibacterium prausnitzii",FALSE,142343,FALSE,"",1
+"gardnerella vaginalis","Gardnerella vaginalis",FALSE,929688,FALSE,"",1
+"gemmiger formicilis","Gemmiger formicilis",FALSE,251065,FALSE,"sibling_higher",1
+"klebsiella pneumoniae","Klebsiella pneumoniae",FALSE,443477,FALSE,"sibling_higher",2
+"lactobacillus acidophilus","Lactobacillus acidophilus",FALSE,487693,FALSE,"sibling_higher",1
+"olsenella profusa","Olsenella profusa",FALSE,879250,FALSE,"",1
+"oscillibacter ruminantium","Oscillibacter ruminantium",FALSE,201,FALSE,"",1
+"parabacteroides distasonis","Parabacteroides distasonis",FALSE,715048,FALSE,"sibling_higher",1
+"roseburia intestinalis","Roseburia intestinalis",FALSE,444838,FALSE,"",1
+"ruminococcus bromii","Ruminococcus bromii",FALSE,121350,FALSE,"",1

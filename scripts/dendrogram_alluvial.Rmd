@@ -21,7 +21,7 @@ library(Hmisc)
 # Load data
 
 ```{r}
-bugs <- read_excel("../tables/Table-S2_alluvial-diagram.xlsx")
+bugs <- read_excel("../data/Table-S1_alluvial-diagram.xlsx")
   
 ```
 
@@ -59,6 +59,8 @@ bugs.gen.concise <- bugs.gen %>%
 
 
 # Use rotl to get tree for our convenient species
+
+The package rotl is dependent on the taxonomy as available from the open tree of life project, so to keep a consistent taxonomy for our chosen organisms we have saved the results of the tree building function from a given date.
 
 ```{r}
 # bugs_otl <- tnrs_match_names(names = as.character(bugs.gen.concise$species.string)) %>%
@@ -119,13 +121,9 @@ names(respkey) <- c("NRO", "NRU/M", "NRY",
                     "RO", "RU/M", "RY",
                     "U/MO", "U/MY")
 
-# Fix akkermansia for quick modification
-
-# adddat$enrichage[1] <- "Y"
 ```
 
 ```{r}
-# cairo_ps("../figures/alluvial_3-axes.ps")
 adddat %>%
   mutate(
     colkey = paste0(Immunotherapy, enrichage),
@@ -145,7 +143,7 @@ adddat %>%
   scale_color_manual(aesthetics = c("color", "fill"), values = respkey) +
   theme_void() +
   ggsave("../figures/alluvial_3-axes.pdf", width = 5, height = 5)
-# dev.off()
+
 ```
 
 
